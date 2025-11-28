@@ -1,78 +1,85 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
-from reportlab.platypus import Image
-import os
-from datetime import datetime
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.utils import ImageReader
+from reportlab.lib.units import mm
+import io
 
-def generate_pdf(patient, date, implants, remarks):
-    filename = f"feuille_de_route_{patient.replace(' ', '_')}.pdf"
-    c = canvas.Canvas(filename, pagesize=A4)
+def generate_pdf(data, logo_path="assets/logo.png"):
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
 
     width, height = A4
 
-    # --- LOGO (facultatif) ---
-    logo_path = "assets/logo.png"
-    if os.path.exists(logo_path):
-        c.drawImage(logo_path, 1*cm, height - 3*cm, width=3*cm, preserveAspectRatio=True)
+    # Logo
+    try:
+        logo = ImageReader(logo_path)
+        c.drawImage(logo, 15*mm, height - 30*mm, width=30*mm, preserveAspectRatio=True)
+    except:
+        pass
 
-    # --- TITRE ---
-    c.setFont("Helvetica-Bold", 18)
-    c.drawString(6*cm, height - 2*cm, "Feuille de route implantaire")
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(60*mm, height - 20*mm, "Feuille de Route Implantologique")
 
-    c.setFont("Helvetica", 12)
-    c.drawString(1*cm, height - 4*cm, f"Patient : {patient}")
-    c.drawString(1*cm, height - 5*cm, f"Date intervention : {date}")
-
-    y = height - 7*cm
-
-    # --- IMPLANTS ---
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(1*cm, y, "Planification des implants")
-    y -= 1*cm
-
+    y = height - 40*mm
     c.setFont("Helvetica", 11)
 
-    for i, imp in enumerate(implants):
-        if y < 5*cm:  # Nouvelle page si trop bas
+    # ----------------------
+    # HEADER
+    # ----------------------
+    for k, v in data["header"].items():
+        c.drawString(20*mm, y, f"{k} : {v}")
+        y -= 6*mm
+
+    y -= 5*mm
+    c.line(15*mm, y, width - 15*mm, y)
+    y -= 10*mm
+
+    # ----------------------
+    # IMPLANTS TABLE
+    # ----------------------
+    for idx, imp in enumerate(data["implants"]):
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(20*mm, y, f"Implant {idx + 1}")
+        y -= 8*mm
+
+        c.setFont("Helvetica", 10)
+        for key, val in imp.items():
+            if key == "images":
+                continue
+            c.drawString(25*mm, y, f"{key} : {val}")
+            y -= 5*mm
+
+        # Images
+        if imp["images"]:
+            for img in imp["images"]:
+                if img is not None:
+                    try:
+                        img_reader = ImageReader(img)
+                        c.drawImage(img_reader, 25*mm, y - 30*mm, width=30*mm, height=30*mm)
+                        y -= 35*mm
+                    except:
+                        pass
+        
+        y -= 10*mm
+
+        if y < 50*mm:
             c.showPage()
-            y = height - 3*cm
+            y = height - 30*mm
 
-        c.drawString(1*cm, y, f"Implant {i+1} : {imp['location']}  |  Ø {imp['diameter']}  |  {imp['length']} mm")
-        y -= 0.6*cm
-        c.drawString(1*cm, y, f"Réf : {imp['ref']}  |  Chirurgie : {imp['surgery_type']}  |  Trousse : {imp['kit']}")
-        y -= 0.6*cm
+    # ----------------------
+    # OBSERVATIONS
+    # ----------------------
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(20*mm, y, "Observations :")
+    y -= 8*mm
 
-        if imp["surgery_type"] == "Pilotée":
-            c.drawString(1*cm, y, f"Forêt utilisé : {imp['drill']}")
-            y -= 0.6*cm
-
-        # Image éventuelle
-        if imp["image"] is not None:
-            img_path = f"temp_img_{i}.png"
-            with open(img_path, "wb") as f:
-                f.write(imp["image"].getbuffer())
-            c.drawImage(img_path, 10*cm, y - 3*cm, width=5*cm, height=3*cm)
-            os.remove(img_path)
-            y -= 3.5*cm
-
-        y -= 0.5*cm
-
-    # --- REMARQUES ---
-    if y < 5*cm:
-        c.showPage()
-        y = height - 3*cm
-
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(1*cm, y, "Remarques / Observations")
-    y -= 1*cm
-
-    text = c.beginText(1*cm, y)
-    text.setFont("Helvetica", 11)
-    for line in remarks.split("\n"):
-        text.textLine(line)
-    c.drawText(text)
+    c.setFont("Helvetica", 10)
+    for line in data["observations"].split("\n"):
+        c.drawString(25*mm, y, line)
+        y -= 5*mm
 
     c.save()
+    pdf = buffer.getvalue()
+    buffer.close()
 
-    return filename
+    return pdf

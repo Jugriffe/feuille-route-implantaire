@@ -96,15 +96,20 @@ observations = st.text_area(config["observations"]["label"])
 # ---------------------------
 #  VALIDATION
 # ---------------------------
-if st.button("📄 Générer la feuille de route"):
-    st.success("Les données ont bien été enregistrées !")
-
-    st.write("### Résumé")
-    st.json({
+if st.button("📄 Générer le PDF"):
+    data = {
         "header": header_data,
         "implants": st.session_state.implants,
         "observations": observations
-    })
+    }
 
-    st.info("La génération PDF peut être ajoutée dans une fonction séparée si tu veux.")
+    pdf_bytes = generate_pdf(data)
 
+    st.download_button(
+        label="⬇️ Télécharger le PDF",
+        data=pdf_bytes,
+        file_name="feuille_de_route.pdf",
+        mime="application/pdf"
+    )
+
+    st.success("PDF généré avec succès !")
