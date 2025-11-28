@@ -1,5 +1,7 @@
 import streamlit as st
 import json
+from pdf_generator import generate_pdf
+
 
 # Chargement configuration
 with open("implants_config.json", "r", encoding="utf-8") as f:
