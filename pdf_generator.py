@@ -23,9 +23,7 @@ def generate_pdf(data, logo_path="assets/logo.png"):
     y = height - 40*mm
     c.setFont("Helvetica", 11)
 
-    # ----------------------
     # HEADER
-    # ----------------------
     for k, v in data["header"].items():
         c.drawString(20*mm, y, f"{k} : {v}")
         y -= 6*mm
@@ -34,9 +32,7 @@ def generate_pdf(data, logo_path="assets/logo.png"):
     c.line(15*mm, y, width - 15*mm, y)
     y -= 10*mm
 
-    # ----------------------
-    # IMPLANTS TABLE
-    # ----------------------
+    # IMPLANTS
     for idx, imp in enumerate(data["implants"]):
         c.setFont("Helvetica-Bold", 12)
         c.drawString(20*mm, y, f"Implant {idx + 1}")
@@ -66,9 +62,7 @@ def generate_pdf(data, logo_path="assets/logo.png"):
             c.showPage()
             y = height - 30*mm
 
-    # ----------------------
     # OBSERVATIONS
-    # ----------------------
     c.setFont("Helvetica-Bold", 12)
     c.drawString(20*mm, y, "Observations :")
     y -= 8*mm
