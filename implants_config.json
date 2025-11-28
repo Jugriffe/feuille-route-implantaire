@@ -1,5 +1,85 @@
 {
-    "diameters": ["3.3", "3.5", "4.0", "4.1", "4.5", "5.0"],
-    "lengths": ["8", "10", "11", "12", "14"],
-    "kits": ["Straumann", "Nobel", "Anthogyr", "Biotech", "Mis", "Autre"]
+  "header": [
+    {
+      "type": "text",
+      "label": "Numéro de commande"
+    },
+    {
+      "type": "text",
+      "label": "Nom du praticien"
+    },
+    {
+      "type": "static_text",
+      "label": "Boite de planification",
+      "value": "Set&GO"
+    }
+  ],
+
+  "implants_table": {
+    "columns": [
+      {
+        "key": "localisation",
+        "label": "Localisation",
+        "type": "text"
+      },
+      {
+        "key": "diametre",
+        "label": "Diamètre",
+        "type": "text"
+      },
+      {
+        "key": "longueur",
+        "label": "Longueur",
+        "type": "text"
+      },
+      {
+        "key": "marque",
+        "label": "Marque implant",
+        "type": "select",
+        "options": [
+          "Straumann",
+          "Nobel",
+          "Megagen",
+          "Global D"
+        ]
+      },
+      {
+        "key": "reference",
+        "label": "Référence commerciale",
+        "type": "text"
+      },
+      {
+        "key": "type_chirurgie",
+        "label": "Type de chirurgie",
+        "type": "select",
+        "options": [
+          "Full guidée",
+          "Pilotée"
+        ]
+      },
+      {
+        "key": "trousse",
+        "label": "Trousse utilisée",
+        "type": "select",
+        "options": [
+          "Trousses de Chirurgie Guidée G42",
+          "Trousses de Chirurgie Guidée G52",
+          "Trousse de Chirurgie Pilotée G20",
+          "Autre"
+        ]
+      },
+      {
+        "key": "foret",
+        "label": "Forêt (si pilotée)",
+        "type": "text"
+      }
+    ],
+
+    "images_per_implant": 3
+  },
+
+  "observations": {
+    "type": "textarea",
+    "label": "Remarques / Observations"
+  }
 }
