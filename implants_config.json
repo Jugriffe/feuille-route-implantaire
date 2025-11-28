@@ -1,0 +1,5 @@
+{
+    "diameters": ["3.3", "3.5", "4.0", "4.1", "4.5", "5.0"],
+    "lengths": ["8", "10", "11", "12", "14"],
+    "kits": ["Straumann", "Nobel", "Anthogyr", "Biotech", "Mis", "Autre"]
+}
